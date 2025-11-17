@@ -1,10 +1,6 @@
-import Fastify from "fastify";
 import dotenv from "dotenv";
 import chalk from "chalk";
-import fastifyCors from "@fastify/cors";
-import fastifyCookie from "@fastify/cookie";
-import fastifySecureSession from "@fastify/secure-session";
-import multipart from "@fastify/multipart";
+import { createServer } from "./plugins";
 
 dotenv.config();
 
@@ -12,37 +8,7 @@ const port = Number(process.env.PORT) || 7000;
 const host = process.env.HOST || "0.0.0.0";
 
 export async function startServer() {
-  const app = Fastify();
-
-  app.register(fastifyCors, {
-    origin: [
-      process.env.FRONTEND_URL ?? "http://localhost:3000",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true,
-  });
-
-  app.register(fastifyCookie, {
-    secret: process.env.COOKIE_SECRET || "",
-    parseOptions: {},
-  });
-
-  app.register(fastifySecureSession, {
-    key: Buffer.from(process.env.SESSION_SECRET || ""),
-    cookie: {
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 1000 * 60 * 15,
-    },
-  });
-
-  app.register(multipart, {
-    limits: {
-      fileSize: 5 * 1024 * 1024, // 5MB
-      files: 10,
-    },
-  });
+  const app = createServer();
 
   try {
     await app.listen({ port, host });
