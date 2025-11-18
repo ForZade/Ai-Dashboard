@@ -22,7 +22,7 @@ export class PrismaService {
     }
   }
 
-  async getClient() {
+  getClient() {
     if (!this.prisma) {
       throw new Error("Posgres DB is not connected");
     }

@@ -3,16 +3,6 @@ import chalk from "chalk";
 import { createMessagesTable } from './tables/messages.table';
 import { createMemoryMessagesTable } from './tables/memory.table';
 
-export const scyllaClient = new Client({
-  contactPoints: [process.env.SCYLLA_HOST || "127.0.0.1"],
-  localDataCenter: process.env.SCYLLA_DATACENTER || "datacenter1",
-  keyspace: process.env.SCYLLA_KEYSPACE || "ai_dashboard",
-});
-
-export const scylla = {
-  getClient: () => scyllaClient,
-};
-
 export class ScyllaService {
   private scylla: Client | null = null;
 
@@ -45,5 +35,13 @@ export class ScyllaService {
     } catch (err: unknown) {
       console.error(`[${chalk.red("ScyllaDB")}] Failed to deploy tables`);
     }
+  }
+
+  getClient() {
+    if (!this.scylla) {
+      throw new Error("Posgres DB is not connected");
+    }
+
+    return this.scylla;
   }
 }
