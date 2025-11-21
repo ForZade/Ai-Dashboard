@@ -1,0 +1,116 @@
+import { z } from "zod";
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export const registerSchema = z
+    .object({
+        email: z
+            .string()
+            .min(1, { message: "Email is required" })
+            .regex(emailRegex, { message: "Invalid email address" }),
+        password: z
+            .string()
+            .min(6, { message: "Password must be at least 6 characters" })
+            .regex(/[A-Z]/, { message: "Password must contain an uppercase letter" })
+            .regex(/[0-9]/, { message: "Password must contain a number" })
+            .regex(/[!@#$%^&*.,]/, { message: "Password must contain a special character" }),
+        repeatPassword: z.string(),
+        username: z.string(),
+    })
+    .refine((data) => data.password === data.repeatPassword, {
+        message: "Passwords do not match",
+        path: ["repeatPassword"],
+});
+
+export const loginSchema = z.object({
+    email: z
+        .string()
+        .min(1, { message: "Email is required" })
+        .regex(emailRegex, { message: "Invalid email address" }),
+    password: z
+        .string()
+        .min(6, { message: "Password must be at least 6 characters" }),
+});
+
+export const ChangePasswordSchema = z.object({
+  oldPassword: z.string(),
+
+  newPassword: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
+    .regex(/(?=.*[0-9])/, "Password must contain a number")
+    .regex(/(?=.*[!@#$%^&*.,])/, "Password must contain a special character"),
+
+  repeatNewPassword: z.string(),
+})
+.refine(
+  (data) => data.oldPassword !== data.newPassword,
+  {
+    message: "New password cannot be the same as old password",
+    path: ["newPassword"],
+  }
+)
+.refine(
+  (data) => data.newPassword === data.repeatNewPassword,
+  {
+    message: "Passwords do not match",
+    path: ["repeatNewPassword"],
+  }
+);
+
+export const EmailSchema = z.object({
+    email: z
+        .string()
+        .min(1, { message: "Email is required" })
+        .regex(emailRegex, { message: "Invalid email address" }),
+});
+
+export const OtpSchema = z.object({
+  otp: z
+    .string()
+    .length(6)
+    .regex(/^\d{6}$/, "OTP must contain only numbers"),
+});
+
+export const ValidateOtpSchema = z.object({
+  otp: z
+    .string()
+    .length(6)
+    .regex(/^\d{6}$/, "OTP must contain only numbers"),
+
+  email: z
+        .string()
+        .min(1, { message: "Email is required" })
+        .regex(emailRegex, { message: "Invalid email address" }),
+});
+
+export const ResetPasswordSchema = z.object({
+  resetToken: z
+    .string()
+    .min(1, "Token can't be empty"),
+
+  newPassword: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
+    .regex(/(?=.*[0-9])/, "Password must contain a number")
+    .regex(/(?=.*[!@#$%^&*.,])/, "Password must contain a special character"),
+
+  repeatNewPassword: z.string(),
+})
+.refine(
+  (data) => data.newPassword === data.repeatNewPassword,
+  {
+    message: "Passwords do not match",
+    path: ["repeatNewPassword"],
+  }
+);
+
+export type RegisterType = z.infer<typeof registerSchema>;
+export type LoginType = z.infer<typeof loginSchema>;
+export type ChangePasswordType = z.infer<typeof ChangePasswordSchema>;
+export type EmailType = z.infer<typeof EmailSchema>;
+export type OtpType = z.infer<typeof OtpSchema>;
+export type ValidateOtpType = z.infer<typeof ValidateOtpSchema>;
+export type ResetPasswordType = z.infer<typeof ResetPasswordSchema>;

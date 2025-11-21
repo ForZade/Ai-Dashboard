@@ -2,6 +2,7 @@ import { prismaService } from "../db";
 import argon2 from "argon2";
 import { User } from "../db/postgres/prisma";
 import { generateId } from "../lib/utils/snowflake.utils";
+import { NotFoundError, UnauthorizedError } from "../lib/exceptions";
 
 class UserService {
     async createUser({ email, username, password, googleId }: { email: string, username: string, password?: string, googleId?: string }): Promise<User> {
@@ -59,17 +60,25 @@ class UserService {
     async getUserById(userId: bigint) {
         const prisma = prismaService.getClient();
 
-        return await prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: { id: userId },
         });
+
+        if (!user) throw new NotFoundError("User not found");
+
+        return user;
     }
 
     async getUserByEmail(email: string) {
         const prisma = prismaService.getClient();
 
-        return await prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: { email },
         });
+
+        if (!user) throw new NotFoundError("User not found");
+
+        return user;
     }
 }
 

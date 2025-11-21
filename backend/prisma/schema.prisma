@@ -9,23 +9,26 @@ datasource db {
 }
 
 model User {
-  id            BigInt          @id @default(autoincrement())
+  id            BigInt          @id
   email         String          @unique
   verified      DateTime?
   username      String?
+  roles         Int             @default(0)
   avatar_url    String?
   created_at    DateTime        @default(now())
 
-  password        UserPassword?
-  oauths          UserOAuth[]
-  sessions        Session[]
-  projects        Project[]
+  password         UserPassword?
+  oauths           UserOAuth[]
+  sessions         Session[]
+  projects         Project[]
   project_folders  ProjectFolder[]
-  chats_owned     Chat[]
-  chats           UserChatProject[]
-  chat_members    ChatMember[]
-  threads_created Thread[]        @relation("ThreadCreator")
-  metadata        UserMetadata?
+  chats_owned      Chat[]
+  chats            UserChatProject[]
+  chat_members     ChatMember[]
+  threads_created  Thread[]            @relation("ThreadCreator")
+  metadata         UserMetadata?
+  safe_device      SafeDevice[]
+  twofa            TwoFA?
 }
 
 model UserPassword {
@@ -37,7 +40,7 @@ model UserPassword {
 }
 
 model UserOAuth {
-  id               BigInt   @id @default(autoincrement())
+  id               BigInt   @id
   user_id          BigInt
   provider         String
   provider_user_id String
@@ -55,8 +58,29 @@ model UserOAuth {
   @@unique([provider, provider_user_id])
 }
 
+model TwoFA {
+  id         BigInt   @id
+  user_id    BigInt   @unique
+  secret     String
+  enabled    Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  backup_codes BackupCode[]
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model BackupCode {
+  id BigInt @id
+  twofa_id BigInt
+  code String
+  used Boolean @default(false)
+
+  twofa TwoFA @relation(fields: [twofa_id], references: [id], onDelete: Cascade)
+}
+
 model Session {
-  id            BigInt   @id @default(autoincrement())
+  id            BigInt   @id
   session_token String   @unique
   user_id       BigInt
   expires       DateTime
@@ -68,8 +92,17 @@ model Session {
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
+model SafeDevice {
+  id         BigInt   @id
+  user_id    BigInt
+  user_agent String
+  created_at DateTime @default(now())
+
+  user User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
 model Project {
-  id            BigInt   @id @default(autoincrement())
+  id            BigInt   @id
   user_id       BigInt
   folder_id     BigInt?
   position      Int
@@ -85,7 +118,7 @@ model Project {
 }
 
 model ProjectFolder {
-  id         BigInt   @id @default(autoincrement())
+  id         BigInt   @id
   user_id    BigInt
   is_open    Boolean  @default(true)
   position   Int
@@ -96,7 +129,7 @@ model ProjectFolder {
 }
 
 model Chat {
-  id         BigInt   @id @default(autoincrement())
+  id         BigInt   @id
   name       String
   owner_id   BigInt
   is_private Boolean  @default(false)
@@ -112,7 +145,7 @@ model Chat {
 }
 
 model UserChatProject {
-  id         BigInt @id @default(autoincrement())
+  id         BigInt @id
   user_id    BigInt
   chat_id    BigInt
   project_id BigInt
@@ -123,7 +156,7 @@ model UserChatProject {
 }
 
 model ChatMember {
-  id        BigInt   @id @default(autoincrement())
+  id        BigInt   @id
   room_id   BigInt
   user_id   BigInt
   role      Int
@@ -134,7 +167,7 @@ model ChatMember {
 }
 
 model Thread {
-  id         BigInt   @id @default(autoincrement())
+  id         BigInt   @id
   room_id    BigInt
   title      String
   created_by BigInt
@@ -145,7 +178,7 @@ model Thread {
 }
 
 model AIProfile {
-  id         BigInt  @id @default(autoincrement())
+  id         BigInt  @id
   name       String
   avatar_url String?
 
@@ -153,7 +186,7 @@ model AIProfile {
 }
 
 model Model {
-  id                  BigInt   @id @default(autoincrement())
+  id                  BigInt   @id
   ai_profile_id       BigInt
   provider            String
   api_identifier      String

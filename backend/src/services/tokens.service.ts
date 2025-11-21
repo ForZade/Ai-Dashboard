@@ -3,29 +3,64 @@ import argon2 from "argon2";
 import { NotFoundError, UnauthorizedError } from "../lib/exceptions";
 import { prismaService, redisService } from "../db";
 import { generateId } from "../lib/utils/snowflake.utils";
+import { safe } from "../lib/utils/safe.utils";
 
 
 export class TokenService {
     private accessTokenSecret: string;
     private refreshTokenSecret: string;
+    private resetTokenSecret: string;
 
     constructor() {
         this.accessTokenSecret = process.env.ACCESS_SECRET || "";
         this.refreshTokenSecret = process.env.REFRESH_SECRET || "";
+        this.resetTokenSecret = process.env.RESET_SECRET || "";
     }
 
-    generateToken(userId: bigint, tokenType: "access" | "refresh"): string {
-        const secret = tokenType === "access" ? this.accessTokenSecret : this.refreshTokenSecret;
+    async generateToken(userId: bigint, tokenType: "access" | "refresh" | "reset"): Promise<string> {
+        let secret: string;
+        let expiresIn: "15m" | "30d";
+
+        switch(tokenType) {
+            case "access":
+                secret = this.accessTokenSecret;
+                expiresIn = "15m";
+                break;
+
+            case "refresh":
+                secret = this.refreshTokenSecret;
+                expiresIn = "30d";
+                break;
+
+            case "reset":
+                secret = this.resetTokenSecret;
+                expiresIn = "15m";
+                break;
+        }
 
         return jwt.sign(
             { userId: userId.toString() },
             secret,
-            { expiresIn: tokenType === "access" ? "15m" : "30d" },
+            { expiresIn },
         );
     }
 
-    verifyToken(token: string, tokenType: "access" | "refresh"): string | jwt.JwtPayload | null {
-        const secret = tokenType === "access" ? this.accessTokenSecret : this.refreshTokenSecret;
+    verifyToken(token: string, tokenType: "access" | "refresh" | "reset"): string | jwt.JwtPayload | null {
+        let secret: string;
+
+        switch(tokenType) {
+            case "access":
+                secret = this.accessTokenSecret;
+                break;
+
+            case "refresh":
+                secret = this.refreshTokenSecret;
+                break;
+
+            case "reset":
+                secret = this.resetTokenSecret;
+                break;
+        }
 
         try {
             return jwt.verify(token, secret);
@@ -41,8 +76,8 @@ export class TokenService {
             where: { user_id: userId, user_agent: userAgent }
         })
 
-        const newAccessToken = this.generateToken(userId, "access");
-        const newRefreshToken = this.generateToken(userId, "refresh");
+        const newAccessToken = await this.generateToken(userId, "access");
+        const newRefreshToken = await this.generateToken(userId, "refresh");
 
         const id = generateId();
         const hashedRefreshToken = await argon2.hash(newRefreshToken, {
@@ -124,26 +159,6 @@ export class TokenService {
         
         return user;
     }
-
-    async generatePasswordResetToken(userId: string, email: string) {
-        const token = jwt.sign(
-            { userId, email }, 
-            process.env.PASSWORD_RESET_SECRET!, 
-            { expiresIn: "15m"},
-        );
-
-        const expiresIn = 60 * 15; // 15 min
-
-        const redis = redisService.getClient();
-        const hashedToken = await argon2.hash(token, {
-            type: argon2.argon2id,
-        });
-
-        await redis.del(`reset:${email}`);
-        await redis.set(`reset:${email}`, hashedToken, "EX", expiresIn);
-
-        return token;
-    }
 }
 
-export const tokenSerivice = new TokenService();
+export const tokenService = new TokenService();

@@ -17,7 +17,7 @@ export class ScyllaService {
 
     try {
       await this.scylla.connect();
-      console.log(`[${chalk.cyan("ScyllaDB")}] connected successfully`);
+      console.log(`[${chalk.blue("ScyllaDB")}] connected successfully`);
 
       await this.initTables();
     } catch(err: unknown) {
@@ -30,8 +30,6 @@ export class ScyllaService {
     try {
       await createMessagesTable(this.scylla);
       await createMemoryMessagesTable(this.scylla);
-
-      console.log(`[${chalk.cyan("ScyllaDB")}] Tables deployed successfully`);
     } catch (err: unknown) {
       console.error(`[${chalk.red("ScyllaDB")}] Failed to deploy tables`);
     }

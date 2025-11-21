@@ -2,9 +2,10 @@ import { AppError } from "./errors";
 import { ZodError } from "zod";
 import { ValidationError } from "./errors";
 import { FastifyReply } from "fastify";
+import chalk from "chalk";
 
 export function handleError(res: FastifyReply, error: unknown) {
-    console.error('API Error:', error);
+    console.error(`[${chalk.red("API Error")}]`, error);
 
     if (error instanceof AppError) {
         return res.status(error.statusCode).send({
@@ -24,6 +25,7 @@ export function handleError(res: FastifyReply, error: unknown) {
         });
     }
 
+    console.log("I throw 500");
     return res.status(500).send({
         error: 'Internal server error', code: 'INTERNAL_ERROR'
     });

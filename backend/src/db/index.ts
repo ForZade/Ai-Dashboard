@@ -6,7 +6,7 @@ const prismaService = new PrismaService();
 const scyllaService = new ScyllaService();
 const redisService = new RedisService();
 
-export const connectAll = async () => {
+export const connectDB = async () => {
     try {
         await prismaService.connect();
         await scyllaService.connect();

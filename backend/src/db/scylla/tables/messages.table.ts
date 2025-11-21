@@ -18,5 +18,5 @@ export const createMessagesTable = async (scylla: Client | null) => {
   `;
 
   await scylla.execute(query);
-  console.log(`[${chalk.cyan("ScyllaDB")}] Messages table ready`);
+  console.log(`${chalk.blue("・")} Messages table ready`);
 };
