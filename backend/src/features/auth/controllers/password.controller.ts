@@ -91,10 +91,8 @@ class PasswordController {
             message: "OTP is missing",
         });
 
-        const [what, otpError] = await safe(otpService.validateOtp(email, otp, "password-reset"));
+        const [, otpError] = await safe(otpService.validateOtp(email, otp, "password-reset"));
         if (otpError) return handleError(res, otpError);
-
-        console.log(otp, what, otpError);
 
         const [user, userError] = await safe(userService.getUserByEmail(email));
         if (userError) return handleError(res, userError);
@@ -104,7 +102,7 @@ class PasswordController {
         const [token, tokenError] = await safe(tokenService.generateToken(userId, "reset"));
         if (tokenError) return handleError(res, tokenError);
 
-        const hashedToken = await argon2.hash(otp, {
+        const hashedToken = await argon2.hash(token, {
             type: argon2.argon2id,
         });
 

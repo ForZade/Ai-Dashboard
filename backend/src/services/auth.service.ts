@@ -82,6 +82,8 @@ export class AuthService {
         const doTokensMatch = await argon2.verify(savedToken, resetToken);
         if (!doTokensMatch) {
             console.log("Tokens do not match?");
+            console.log("Saved hashed token:", savedToken);
+            console.log("input token:", resetToken);
 
             throw new UnauthorizedError("Invalid token");
         }
