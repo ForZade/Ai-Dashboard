@@ -1,26 +1,68 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: var(--background);
+  --color-background-base: var(--background-base);
+  --color-background-surface: var(--background-surface);
+  --color-background-contrast: var(--background-contrast);
+
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-accent-bronze-dark: var(--accent-bronze-dark);
+  --color-accent-bronze: var(--accent-bronze);
+
+  --color-accent-blue-100: var(--accent-blue-100);
+  --color-accent-blue-200: var(--accent-blue-200);
+  --color-accent-blue-300: var(--accent-blue-300);
+
+  --color-c-turquoise: var(--c-turquoise);
+  --color-c-green: var(--c-green);
+  --color-c-blue: var(--c-blue);
+  --color-c-purple: var(--c-purple);
+  --color-c-pink: var(--c-pink);
+  --color-c-yellow: var(--c-yellow);
+  --color-c-orange: var(--c-orange);
+  --color-c-red: var(--c-red);
+  --color-c-gray: var(--c-gray);
+  --color-c-slate: var(--c-slate);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background-base: #ECEFF4;
+  --background-surface: #D8DEE9;
+  --background-contrast: #E5E9F0;
+
+  --foreground: #090909;
+
+  --accent-bronze-dark: #E5AF93;
+  --accent-bronze: #FFE2C6;
+  
+  --accent-blue-100: #02EAF8;
+  --accent-blue-200: #03C8F3;
+  --accent-blue-300: #0390DF;
+
+  --c-turquoise: #1ABC9C;
+  --c-green: #2ECC71;
+  --c-blue: #3498DB;
+  --c-purple: #9B59B6;
+  --c-pink: #E91E63;
+  --c-yellow: #F1C40F;
+  --c-orange: #E67E22;
+  --c-red: #E74C3C;
+  --c-gray: #95A5A6;
+  --c-slate: #607D8B;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.dark {
+  --background-base: #2D2D30;
+  --background-surface: #29292B;
+  --background-contrast: #252526;
+
+  --foreground: #F0F0F0;
+
+  --accent-blue-100: #30B7D2;
+  --accent-blue-200: #369BCE;
+  --accent-blue-300: #2383C2;
 }

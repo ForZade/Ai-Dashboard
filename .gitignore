@@ -58,3 +58,5 @@ build/
 coverage/
 *.seed
 *.bak
+*storybook.log
+storybook-static
