@@ -1,8 +1,8 @@
 // tests/unit/services/token.service.test.ts
-import { tokenService } from '../../../src/services';
-import { prismaService } from '../../../src/db';
-import { NotFoundError, UnauthorizedError } from '../../../src/lib/exceptions';
-import { safe } from '../../../src/lib/utils/safe.utils';
+import { tokenService } from '../../../../src/services';
+import { prismaService } from '../../../../src/db';
+import { NotFoundError, UnauthorizedError } from '../../../../src/lib/exceptions';
+import { safe } from '../../../../src/lib/utils/safe.utils';
 import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
 

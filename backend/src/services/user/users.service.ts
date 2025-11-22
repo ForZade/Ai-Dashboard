@@ -1,8 +1,8 @@
-import { prismaService } from "../db";
+import { prismaService } from "../../db";
 import argon2 from "argon2";
-import { User } from "../db/postgres/prisma";
-import { generateId } from "../lib/utils/snowflake.utils";
-import { NotFoundError, UnauthorizedError } from "../lib/exceptions";
+import { User } from "../../db/postgres/prisma";
+import { generateId } from "../../lib/utils/snowflake.utils";
+import { NotFoundError } from "../../lib/exceptions";
 
 class UserService {
     async createUser({ email, username, password, googleId }: { email: string, username: string, password?: string, googleId?: string }): Promise<User> {

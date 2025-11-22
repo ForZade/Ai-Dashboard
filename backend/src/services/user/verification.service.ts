@@ -1,7 +1,7 @@
 import { userService } from './users.service';
 import { NotFoundError, UnauthorizedError } from '../../lib/exceptions';
 import { prismaService, redisService } from '../../db';
-import { otpService } from './otp.service';
+import { otpService } from '../auth/otp.service';
 import { safe } from '../../lib/utils/safe.utils';
 
 export class VerificationService {

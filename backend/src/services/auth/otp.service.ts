@@ -1,6 +1,6 @@
-import { redisService } from "../db";
+import { redisService } from "../../db";
 import argon2 from "argon2";
-import { BadRequestError } from "../lib/exceptions";
+import { BadRequestError } from "../../lib/exceptions";
 
 class OtpService {
     async createOtp(email: string, purpose: "password-reset" | "email-verification") {

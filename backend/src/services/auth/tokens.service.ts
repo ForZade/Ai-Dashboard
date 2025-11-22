@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
-import { NotFoundError, UnauthorizedError } from "../lib/exceptions";
-import { prismaService, redisService } from "../db";
-import { generateId } from "../lib/utils/snowflake.utils";
-import { safe } from "../lib/utils/safe.utils";
+import { NotFoundError, UnauthorizedError } from "../../lib/exceptions";
+import { prismaService } from "../../db";
+import { generateId } from "../../lib/utils/snowflake.utils";
 
 
 export class TokenService {

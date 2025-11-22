@@ -1,7 +1,7 @@
-import { prismaService, redisService } from "../db";
+import { prismaService, redisService } from "../../db";
 import argon2 from "argon2";
-import { User } from "../db/postgres/prisma";
-import { NotFoundError, UnauthorizedError } from "../lib/exceptions";
+import { User } from "../../db/postgres/prisma";
+import { NotFoundError, UnauthorizedError } from "../../lib/exceptions";
 import { tokenService } from "./tokens.service";
 
 export class AuthService {
