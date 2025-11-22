@@ -1,4 +1,4 @@
-import { userService } from './users.service';
+import { userService } from './user.service';
 import { NotFoundError, UnauthorizedError } from '../../lib/exceptions';
 import { prismaService, redisService } from '../../db';
 import { otpService } from '../auth/otp.service';

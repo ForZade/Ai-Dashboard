@@ -3,7 +3,7 @@ import { prismaService, redisService } from '../../../../src/db';
 import { NotFoundError, UnauthorizedError } from '../../../../src/lib/exceptions';
 import { safe } from '../../../../src/lib/utils/safe.utils';
 
-jest.mock('../../../../src/services/user/users.service');
+jest.mock('../../../../src/services/user/user.service');
 jest.mock('../../../../src/db');
 jest.mock('../../../../src/services/auth/otp.service');
 

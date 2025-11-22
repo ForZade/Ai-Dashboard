@@ -7,7 +7,7 @@ import { safe } from '../../../../src/lib/utils/safe.utils';
 import argon2 from 'argon2';
 
 jest.mock('../../../../src/db');
-jest.mock('../../../../src/services/auth/tokens.service');
+jest.mock('../../../../src/services/auth/token.service');
 jest.mock('argon2');
 
 describe('AuthService', () => {
