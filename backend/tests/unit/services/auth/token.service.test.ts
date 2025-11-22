@@ -6,7 +6,7 @@ import { safe } from '../../../../src/lib/utils/safe.utils';
 import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
 
-jest.mock('../../../src/db');
+jest.mock('../../../../src/db');
 jest.mock('jsonwebtoken');
 jest.mock('argon2');
 

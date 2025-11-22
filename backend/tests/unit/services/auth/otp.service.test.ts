@@ -5,7 +5,7 @@ import { BadRequestError } from '../../../../src/lib/exceptions';
 import { safe } from '../../../../src/lib/utils/safe.utils';
 import argon2 from 'argon2';
 
-jest.mock('../../../src/db');
+jest.mock('../../../../src/db');
 jest.mock('argon2');
 
 describe('OtpService', () => {
