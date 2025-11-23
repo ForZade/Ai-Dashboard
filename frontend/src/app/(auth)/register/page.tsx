@@ -2,40 +2,31 @@
 
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { SignupInput, signupSchema } from "../auth.validator";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { safe } from "@/lib/safe.utils";
+import api from "@/lib/axios.client";
+import { useAuth } from "@/contexts/auth.context";
+import { handleError } from "@/lib/error.handler";
 
 export default function RegisterPage() {
-    const [error, setError] = useState<string>("");
-    const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm<SignupInput>({
+    const { register, handleSubmit, setError, formState: { errors, isSubmitting }} = useForm<SignupInput>({
         resolver: zodResolver(signupSchema),
     });
+    const { token } = useAuth();
     const router = useRouter();
 
     const onSubmit = async (data: SignupInput) => {
-        console.log("submit")
-        setError("");
+        const parsed = signupSchema.safeParse(data);
+        if (!parsed.success) return handleError(parsed.error, setError);
 
-        try {
-            const response = await fetch("/api/v1/auth/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            });
+        const [_, fetchError] = await safe(api.post("/api/v1/auth/register", parsed.data, {
+            headers: { Authorization: `Bearer ${token}` }
+        }));
+        if (fetchError) return handleError(fetchError, setError);
 
-            const result = await response.json();
-
-            if (!response.ok) {
-                setError(result.error || "Something went wrong");
-                return;
-            }
-
-            router.push("/login");
-        } catch (err) {
-            setError("Something went wrong");
-        }
+        router.push("/dashboard");
     };
 
     return (
@@ -102,7 +93,7 @@ export default function RegisterPage() {
                     !
                 </div>
 
-                {error && <p style={{ color: "red" }}>{error}</p>}
+                {errors.root && <p style={{ color: "red" }}>{errors.root.message}</p>}
 
                 <button className="w-full py-2 text-foreground bg-accent-blue-100 rounded-lg" type="submit">
                     {isSubmitting ? "Loading..." : "Sign Up"}

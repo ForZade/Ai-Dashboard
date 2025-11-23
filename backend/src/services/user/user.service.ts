@@ -5,7 +5,7 @@ import { generateId } from "../../lib/utils/snowflake.utils";
 import { NotFoundError } from "../../lib/exceptions";
 
 class UserService {
-    async createUser({ email, username, password, googleId }: { email: string, username: string, password?: string, googleId?: string }): Promise<User> {
+    async createUser({ email, username, password, googleId }: { email: string, username?: string, password?: string, googleId?: string }): Promise<User> {
         const prisma = prismaService.getClient();
 
         const existingUser = await prisma.user.findUnique({

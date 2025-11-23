@@ -14,10 +14,10 @@ export const registerSchema = z
             .regex(/[A-Z]/, { message: "Password must contain an uppercase letter" })
             .regex(/[0-9]/, { message: "Password must contain a number" })
             .regex(/[!@#$%^&*.,]/, { message: "Password must contain a special character" }),
-        repeatPassword: z.string(),
-        username: z.string(),
+        confirmPassword: z.string(),
+        username: z.string().optional(),
     })
-    .refine((data) => data.password === data.repeatPassword, {
+    .refine((data) => data.password === data.confirmPassword, {
         message: "Passwords do not match",
         path: ["repeatPassword"],
 });

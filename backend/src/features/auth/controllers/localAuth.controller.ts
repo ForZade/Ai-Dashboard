@@ -42,6 +42,8 @@ class LocalAuthController {
       `,
     }).catch(err => console.error("failed to send reset email:", err));;
 
+    console.log("its fine here");
+
     return res
       .header("x-access-token", accessToken)
       .setCookie("refreshToken", refreshToken, {
@@ -55,7 +57,7 @@ class LocalAuthController {
       .send({
         success: true,
         message: "User successfully registered", 
-        user: serializeToJson(user),
+        data: serializeToJson(user),
       });
   }
 
