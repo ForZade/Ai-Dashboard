@@ -1,24 +1,19 @@
 import { z } from "zod";
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export const signupSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z
+      .string()
+      .min(1, { message: "Email is required" })
+      .regex(emailRegex, { message: "Invalid email address" }),
   password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .refine(
-      (val) => /[A-Z]/.test(val),
-      "Password must contain at least one uppercase letter"
-    )
-    .refine(
-      (val) => /[a-z]/.test(val),
-      "Password must contain at least one lowercase letter"
-    )
-    .refine(
-      (val) => /[0-9]/.test(val),
-      "Password must contain at least one number"
-    ),
-  confirmPassword: z
-    .string(),
+      .string()
+      .min(6, { message: "Password must be at least 6 characters" })
+      .regex(/[A-Z]/, { message: "Password must contain an uppercase letter" })
+      .regex(/[0-9]/, { message: "Password must contain a number" })
+      .regex(/[!@#$%^&*.,]/, { message: "Password must contain a special character" }),
+  confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -27,7 +22,8 @@ export const signupSchema = z.object({
 export const loginSchema = z.object({
     email: z
         .string()
-        .email("Invalid email address"),
+        .min(1, { message: "Email is required" })
+        .regex(emailRegex, { message: "Invalid email address" }),
     password: z
         .string()
         .min(1, "Password is required"),

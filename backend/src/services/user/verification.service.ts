@@ -1,5 +1,5 @@
 import { userService } from './user.service';
-import { NotFoundError, UnauthorizedError } from '../../lib/exceptions';
+import { BadRequestError, handleError, NotFoundError, UnauthorizedError } from '../../lib/exceptions';
 import { prismaService, redisService } from '../../db';
 import { otpService } from '../auth/otp.service';
 import { safe } from '../../lib/utils/safe.utils';
@@ -12,9 +12,9 @@ export class VerificationService {
       throw new NotFoundError('User not found');
     }
 
-    const verified = (user.roles & 1) !== 0;
+    if (!user.verified) return false
 
-    return verified;
+    return true;
   }
 
   async verifyEmail(userId: bigint, email: string, otp: string): Promise<void> {
@@ -28,14 +28,14 @@ export class VerificationService {
 
     await redis.del(`otp:email-verification:${email}`);
 
-    const VERIFIED = 1 << 0;
+    const user = await userService.getUserById(userId);
+    if (!user) throw new NotFoundError("User not found");
+    if (user.verified) throw new BadRequestError("User is already verified");
 
     await prisma.user.update({
       where: { id: BigInt(userId) },
       data: {
-        roles: {
-          increment: VERIFIED,
-        },
+        verified: new Date(),
       },
     });
   }

@@ -8,12 +8,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum RolesType {
+  BASIC   @map("basic")
+  SPECIAL @map("special")
+  PREMIUM @map("premium")
+}
+
 model User {
   id            BigInt          @id
   email         String          @unique
   verified      DateTime?
   username      String?
-  roles         Int             @default(0)
+  roles         RolesType       @default(BASIC)
   avatar_url    String?
   created_at    DateTime        @default(now())
 

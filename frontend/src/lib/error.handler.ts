@@ -20,10 +20,6 @@ export function handleError<T extends FieldValues>(
 ) {
     const backendError = fetchError.error as BackendValidationError;
 
-    if (!backendError.success && backendError.status === 401) {
-        return window.location.replace("/login");
-    }
-
     if (fetchError.error && typeof fetchError.error === 'object') {
         if (backendError.details && Array.isArray(backendError.details)) {
             backendError.details.forEach((detail) => {
@@ -37,6 +33,10 @@ export function handleError<T extends FieldValues>(
             });
             return;
         }
+    }
+
+    if (!backendError.success && backendError.status === 401) {
+        return window.location.replace("/login");
     }
     
     // Handle other errors

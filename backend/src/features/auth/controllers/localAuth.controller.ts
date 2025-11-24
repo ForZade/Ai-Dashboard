@@ -44,6 +44,8 @@ class LocalAuthController {
 
     console.log("its fine here");
 
+    console.log(user, serializeToJson(user));
+
     return res
       .header("x-access-token", accessToken)
       .setCookie("refreshToken", refreshToken, {
@@ -57,7 +59,7 @@ class LocalAuthController {
       .send({
         success: true,
         message: "User successfully registered", 
-        data: serializeToJson(user),
+        data: await serializeToJson(user),
       });
   }
 
