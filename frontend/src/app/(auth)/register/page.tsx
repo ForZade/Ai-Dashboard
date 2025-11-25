@@ -11,13 +11,13 @@ import { handleError } from "@/lib/error.handler";
 
 export default function RegisterPage() {
     const { register, handleSubmit, setError, formState: { errors, isSubmitting }} = useForm<SignupInput>({
-        resolver: zodResolver(signupSchema),
+        // resolver: zodResolver(signupSchema),
     });
     const router = useRouter();
 
     const onSubmit = async (data: SignupInput) => {
-        const parsed = signupSchema.safeParse(data);
-        if (!parsed.success) return handleError(parsed.error, setError);
+        // const parsed = signupSchema.safeParse(data);
+        // if (!parsed.success) return handleError(parsed.error, setError);
 
         const [, error] = await safe(api.post("/api/v1/auth/register", parsed.data));
         if (error) return handleError(error, setError);

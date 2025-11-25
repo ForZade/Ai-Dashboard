@@ -1,20 +1,18 @@
 "use client";
 
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { useAuth } from "@/contexts/auth.context";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { OtpInput, OtpSchema } from "../auth.validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { handleError } from "@/lib/error.handler";
 import { safe } from "@/lib/safe.utils";
-import api from "@/lib/axios.client";
+import { api } from "@/lib/axios.client";
 
 export default function VerifyPage() {
     const { control, handleSubmit, setError, formState: { errors, isSubmitting }} = useForm<OtpInput>({
         resolver: zodResolver(OtpSchema),
     });
-    const { setToken } = useAuth();
     const router = useRouter()
 
     const onSubmit = async (data: OtpInput) => {
@@ -25,11 +23,6 @@ export default function VerifyPage() {
         if (resError) return handleError(resError, setError);
 
         const user = res.data;
-        const newToken = res.headers["x-access-token"];
-
-        if (newToken) {
-            setToken(newToken);
-        }
 
         if (!user.username) return router.replace("/setup");
 

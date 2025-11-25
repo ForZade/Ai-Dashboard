@@ -6,15 +6,13 @@ import { useForm } from "react-hook-form";
 import { LoginInput, loginSchema } from "../auth.validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { safe } from "@/lib/safe.utils";
-import api from "@/lib/axios.client";
-import { useAuth } from "@/contexts/auth.context";
+import { api } from "@/lib/axios.client";
 import { handleError } from "@/lib/error.handler";
 
 export default function LoginPage() {
     const { register, handleSubmit, setError, formState: { errors, isSubmitting }} = useForm<LoginInput>({
         resolver: zodResolver(loginSchema),
     });
-    const { setToken } = useAuth();
     const router = useRouter();
 
     const onSubmit = async (data: LoginInput) => {
@@ -25,11 +23,6 @@ export default function LoginPage() {
         if (resError) return handleError(resError, setError);
 
         const user = res.data;
-        const newToken = res.headers["x-access-token"];
-
-        if (newToken) {
-            setToken(newToken);
-        }
 
         if (!user.verified) return router.replace("/verify");
 
