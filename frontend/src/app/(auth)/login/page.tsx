@@ -9,12 +9,14 @@ import { safe } from "@/lib/safe.utils";
 import { api } from "@/lib/axios.client";
 import { handleError } from "@/lib/error.handler";
 import { useEffect } from "react";
+import { useUserStore } from "@/store/useUser.store";
 
 export default function LoginPage() {
     const { register, handleSubmit, setError, formState: { errors, isSubmitting }} = useForm<LoginInput>({
         resolver: zodResolver(loginSchema),
     });
     const router = useRouter();
+    const { setUser } = useUserStore();
 
     const onSubmit = async (data: LoginInput) => {
         const parsed = loginSchema.safeParse(data);
@@ -24,9 +26,9 @@ export default function LoginPage() {
         if (resError) return handleError(resError, setError);
 
         const user = res.data;
+        setUser(user);
 
         if (!user.verified) return router.replace("/verify");
-
         if (!user.username) return router.replace("/setup");
 
         router.replace("/chat");

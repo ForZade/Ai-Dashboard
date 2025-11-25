@@ -9,18 +9,21 @@ import { handleError } from "@/lib/error.handler";
 import { safe } from "@/lib/safe.utils";
 import { api } from "@/lib/axios.client";
 import { useEffect } from "react";
+import { useUserStore } from "@/store/useUser.store";
 
 export default function VerifyPage() {
     const { control, handleSubmit, setError, formState: { errors, isSubmitting }} = useForm<OtpInput>({
         resolver: zodResolver(OtpSchema),
     });
     const router = useRouter()
+    const { setUser } = useUserStore();
 
     const onSubmit = async (data: OtpInput) => {
         const [res, resError] = await safe(api.post("/api/v1/auth/verify", data));
         if (resError) return handleError(resError, setError);
 
         const user = res.data;
+        setUser(user);
 
         if (!user.username) return router.replace("/setup");
 

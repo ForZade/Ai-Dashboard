@@ -8,16 +8,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { safe } from "@/lib/safe.utils";
 import { api } from "@/lib/axios.client";
 import { handleError } from "@/lib/error.handler";
+import { useUserStore } from "@/store/useUser.store";
 
 export default function RegisterPage() {
     const { register, handleSubmit, setError, formState: { errors, isSubmitting }} = useForm<SignupInput>({
         resolver: zodResolver(signupSchema),
     });
     const router = useRouter();
+    const { setUser } = useUserStore();
 
     const onSubmit = async (data: SignupInput) => {
-        const [, error] = await safe(api.post("/api/v1/auth/register", data));
+        const [res, error] = await safe(api.post("/api/v1/auth/register", data));
         if (error) return handleError(error, setError);
+
+        setUser(res.data);
 
         router.replace("/verify");
     };
