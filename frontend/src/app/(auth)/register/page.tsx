@@ -6,8 +6,7 @@ import { useForm } from "react-hook-form";
 import { SignupInput, signupSchema } from "../auth.validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { safe } from "@/lib/safe.utils";
-import api from "@/lib/axios.client";
-import { useAuth } from "@/contexts/auth.context";
+import { api } from "@/lib/axios.client";
 import { handleError } from "@/lib/error.handler";
 
 export default function RegisterPage() {
@@ -15,20 +14,13 @@ export default function RegisterPage() {
         resolver: zodResolver(signupSchema),
     });
     const router = useRouter();
-    const { setToken } = useAuth();
 
     const onSubmit = async (data: SignupInput) => {
         const parsed = signupSchema.safeParse(data);
         if (!parsed.success) return handleError(parsed.error, setError);
 
-        const [res, error] = await safe(api.post("/api/v1/auth/register", parsed.data));
+        const [, error] = await safe(api.post("/api/v1/auth/register", parsed.data));
         if (error) return handleError(error, setError);
-
-        const newToken = res.headers["x-access-token"];
-
-        if (newToken) {
-            setToken(newToken);
-        }
 
         router.replace("/verify");
     };
