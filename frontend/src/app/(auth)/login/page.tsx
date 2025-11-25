@@ -10,7 +10,7 @@ import api from "@/lib/axios.client";
 import { useAuth } from "@/contexts/auth.context";
 import { handleError } from "@/lib/error.handler";
 
-export default function RegisterPage() {
+export default function LoginPage() {
     const { register, handleSubmit, setError, formState: { errors, isSubmitting }} = useForm<LoginInput>({
         resolver: zodResolver(loginSchema),
     });

@@ -29,5 +29,13 @@ export const loginSchema = z.object({
         .min(1, "Password is required"),
 });
 
+export const OtpSchema = z.object({
+  otp: z
+    .string()
+    .length(6)
+    .regex(/^\d{6}$/, "OTP must contain only numbers"),
+});
+
 export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type OtpInput = z.infer<typeof OtpSchema>;
