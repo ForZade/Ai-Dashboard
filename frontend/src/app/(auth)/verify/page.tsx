@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { handleError } from "@/lib/error.handler";
 import { safe } from "@/lib/safe.utils";
 import { api } from "@/lib/axios.client";
+import { useEffect } from "react";
 
 export default function VerifyPage() {
     const { control, handleSubmit, setError, formState: { errors, isSubmitting }} = useForm<OtpInput>({
@@ -16,10 +17,7 @@ export default function VerifyPage() {
     const router = useRouter()
 
     const onSubmit = async (data: OtpInput) => {
-        const parsed = OtpSchema.safeParse(data);
-        if (!parsed.success) return handleError(parsed.error, setError);
-
-        const [res, resError] = await safe(api.post("/api/v1/auth/verify", parsed.data));
+        const [res, resError] = await safe(api.post("/api/v1/auth/verify", data));
         if (resError) return handleError(resError, setError);
 
         const user = res.data;
@@ -31,7 +29,10 @@ export default function VerifyPage() {
 
     return (
         <div className="flex flex-col gap-6">
-            <h1 className="text-xl font-bold text-nowrap text-white text-center">Login</h1>
+            <header>
+                <h1 className="text-xl font-bold text-nowrap text-foreground text-center">Verify</h1>
+                <p className="text-sm text-foreground/75 text-center">Verification code was sent to your email address.</p>
+            </header>
 
             <div className="w-min h-min flex flex-col gap-2">
                 <label className="text-foreground/50 font-bold text-sm">
@@ -62,15 +63,15 @@ export default function VerifyPage() {
                         {errors.otp.message}
                     </p>
                 )}
-
-                <div className="w-full h-min text-foreground text-sm flex gap-1 items-center justify-center">
-                    <a className="text-accent-blue-300 underline font-semibold">Resend verification code</a>
-                </div>
-
-                <button className="w-full py-2 text-foreground bg-accent-blue-100 rounded-lg" type="submit" onClick={handleSubmit(onSubmit)}>
-                    {isSubmitting ? "Loading..." : "Verify"}
-                </button>
             </div>
+
+            <div className="w-full h-min text-foreground text-sm flex gap-1 items-center justify-center">
+                <a className="text-accent-blue-300 underline font-semibold">Resend verification code</a>
+            </div>
+
+            <button className="w-full py-2 text-foreground bg-accent-blue-100 rounded-lg" type="submit" onClick={handleSubmit(onSubmit)}>
+                {isSubmitting ? "Loading..." : "Verify"}
+            </button>
         </div>
     )
 }

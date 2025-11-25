@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { safe } from "@/lib/safe.utils";
 import { api } from "@/lib/axios.client";
 import { handleError } from "@/lib/error.handler";
+import { useEffect } from "react";
 
 export default function LoginPage() {
     const { register, handleSubmit, setError, formState: { errors, isSubmitting }} = useForm<LoginInput>({
@@ -35,53 +36,59 @@ export default function LoginPage() {
         <div className="flex flex-col gap-6">
             <h1 className="text-xl font-bold text-nowrap text-white text-center">Login</h1>
 
-            <form className="flex-col flex gap-4" onSubmit={handleSubmit(onSubmit)}>
-                <div className="w-min h-min flex flex-col gap-2">
-                    <label className="text-foreground/50 font-bold text-sm">
-                        Email
-                    </label>
+            <form className="flex-col flex gap-6" onSubmit={handleSubmit(onSubmit)}>
+                <section className="flex flex-col gap-4">
+                    <div className="w-min h-min flex flex-col gap-2">
+                        <label className="text-foreground/50 font-bold text-sm">
+                            Email
+                        </label>
 
-                    <Input
-                        placeholder="Email" 
-                        className="min-w-60 max-w-80 w-80"
-                        {...register("email")}
-                    />
-                    {errors.email && (
-                        <p className="text-red-400 text-xs">
-                            {errors.email.message}
-                        </p>
-                    )}
-                </div>
+                        <Input
+                            placeholder="Email" 
+                            className="min-w-60 max-w-80 w-80"
+                            {...register("email")}
+                        />
+                        {errors.email && (
+                            <p className="text-red-400 text-xs">
+                                {errors.email.message}
+                            </p>
+                        )}
+                    </div>
 
-                <div className="w-min h-min flex flex-col gap-2">
-                    <label className="text-foreground/50 font-bold text-sm">
-                        Password
-                    </label>
+                    <div className="w-min h-min flex flex-col gap-2">
+                        <label className="text-foreground/50 font-bold text-sm">
+                            Password
+                        </label>
 
-                    <Input
-                        placeholder="Password"
-                        className="min-w-60 max-w-80 w-80"
-                        type="password"
-                        {...register("password")}
-                    />
-                    {errors.password && (
-                        <p className="text-red-400 text-xs">
-                            {errors.password.message}
-                        </p>
-                    )}
-                </div>
+                        <Input
+                            placeholder="Password"
+                            className="min-w-60 max-w-80 w-80"
+                            type="password"
+                            {...register("password")}
+                        />
+                        {errors.password && (
+                            <p className="text-red-400 text-xs">
+                                {errors.password.message}
+                            </p>
+                        )}
+                    </div>
+                </section>
 
-                <div className="w-full h-min text-foreground text-sm flex gap-1 items-center justify-center">
-                    Don't have an account?
-                    <a className="text-accent-blue-300 underline font-semibold">Register</a>
-                    here
-                </div>
+                <section className="flex flex-col gap-8">
+                    <div className="flex flex-col gap-4">
+                        <div className="w-full h-min text-foreground text-sm flex gap-1 items-center justify-center">
+                            Don't have an account?
+                            <a className="text-accent-blue-300 underline font-semibold">Register</a>
+                            here
+                        </div>
 
-                {errors.root && <p style={{ color: "red" }}>{errors.root.message}</p>}
+                        {errors.root && <p className="text-sm text-red-400 text-center">{errors.root.message}</p>}
+                    </div>
 
-                <button className="w-full py-2 text-foreground bg-accent-blue-100 rounded-lg" type="submit">
-                    {isSubmitting ? "Loading..." : "Login"}
-                </button>
+                    <button className="w-full py-2 text-foreground bg-accent-blue-100 rounded-lg" type="submit">
+                        {isSubmitting ? "Loading..." : "Login"}
+                    </button>
+                </section>
             </form>
         </div>
     )

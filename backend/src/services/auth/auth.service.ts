@@ -1,7 +1,7 @@
 import { prismaService, redisService } from '../../db';
 import argon2 from 'argon2';
 import { User } from '../../db/postgres/prisma';
-import { NotFoundError, UnauthorizedError } from '../../lib/exceptions';
+import { InvalidCredentialsError, NotFoundError, UnauthorizedError } from '../../lib/exceptions';
 import { tokenService } from './token.service';
 
 export class AuthService {
@@ -13,7 +13,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedError('Invalid credentials');
+      throw new InvalidCredentialsError("Wrong email or password")
     }
 
     const userPassword = await prisma.userPassword.findUnique({
@@ -21,13 +21,13 @@ export class AuthService {
     });
 
     if (!userPassword || !userPassword.password) {
-      throw new UnauthorizedError('Invalid credentials');
+      throw new InvalidCredentialsError("Wrong email or password")
     }
 
     const passwordMatch = await argon2.verify(userPassword.password, password);
 
     if (!passwordMatch) {
-      throw new UnauthorizedError('Invalid credentials');
+      throw new InvalidCredentialsError("Wrong email or password")
     }
 
     return user;

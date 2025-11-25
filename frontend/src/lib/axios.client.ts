@@ -30,12 +30,12 @@ api.interceptors.response.use(res => {
     err => {
         const res = err.response;
 
-        if (res?.status === 401) {
+        if (res?.status === 401 && res?.code === "UNAUTHORIZED") {
             window.location.replace("/login");
             return Promise.reject(err);
         }
 
-        return Promise.reject(res?.data || err);
+        return Promise.reject(err);
     }
 );
 
