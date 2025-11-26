@@ -34,6 +34,11 @@ export function handleError<T extends FieldValues>(
         return;
     }
 
+    if (error.code === "UNAUTHORIZED") {
+        window.location.href = "/login";
+        return;
+    }
+
     const msg = error.message ?? "Something went wrong";
     alert(msg);
 }

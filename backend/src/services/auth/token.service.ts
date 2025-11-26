@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
-import { NotFoundError, UnauthorizedError } from "../../lib/exceptions";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../../lib/exceptions";
 import { prismaService } from "../../db";
 import { generateId } from "../../lib/utils/snowflake.utils";
 
@@ -16,9 +16,14 @@ export class TokenService {
         this.resetTokenSecret = process.env.RESET_SECRET || "";
     }
 
-    async generateToken(userId: bigint, tokenType: "access" | "refresh" | "reset"): Promise<string> {
+    async generateToken(userId: bigint, tokenType: "access" | "refresh" | "reset", userAgent?: string): Promise<string> {
+        if (tokenType === "refresh" && !userAgent) {
+            throw new BadRequestError("User Agent is required for refresh token");
+        }
+
         let secret: string;
         let expiresIn: "15m" | "30d";
+        let payload: { userId: string, userAgent?: string } = { userId: userId.toString() }
 
         switch(tokenType) {
             case "access":
@@ -29,6 +34,7 @@ export class TokenService {
             case "refresh":
                 secret = this.refreshTokenSecret;
                 expiresIn = "30d";
+                payload = { userId: userId.toString(), userAgent }
                 break;
 
             case "reset":
@@ -38,7 +44,7 @@ export class TokenService {
         }
 
         return jwt.sign(
-            { userId: userId.toString() },
+            payload,
             secret,
             { expiresIn },
         );
@@ -73,10 +79,10 @@ export class TokenService {
 
         await prisma.session.deleteMany({
             where: { user_id: userId, user_agent: userAgent }
-        })
+        });
 
         const newAccessToken = await this.generateToken(userId, "access");
-        const newRefreshToken = await this.generateToken(userId, "refresh");
+        const newRefreshToken = await this.generateToken(userId, "refresh", userAgent);
 
         const id = generateId();
         const hashedRefreshToken = await argon2.hash(newRefreshToken, {
@@ -99,7 +105,7 @@ export class TokenService {
         };
     }
 
-    async validateRefreshToken(refreshToken: string, userAgent: string) {
+    async validateRefreshToken(refreshToken: string) {
         const prisma = prismaService.getClient();
         
         const decoded = this.verifyToken(refreshToken, "refresh");
@@ -107,11 +113,13 @@ export class TokenService {
         if (!decoded || typeof decoded === "string") {
             throw new UnauthorizedError("Invalid refresh token");
         }
+
+        const userAgent = decoded.userAgent;
         
         const hashedRefreshToken = await prisma.session.findFirst({
             where: {
-            user_id: BigInt(decoded.userId),
-            user_agent: userAgent,
+                user_id: BigInt(decoded.userId),
+                user_agent: userAgent
             },
         });
         
@@ -132,9 +140,19 @@ export class TokenService {
         if (!user) {
             throw new NotFoundError("User not found");
         }
+
+        console.log("old token:")
+        console.log(refreshToken)
+        console.log(decoded)
         
         const { refreshToken: newRefreshToken, accessToken: newAccessToken } = 
             await this.handleTokenCreation(decoded.userId, userAgent);
+
+        const newDecoded = tokenService.verifyToken(refreshToken, "refresh");
+
+        console.log("new token:")
+        console.log(newRefreshToken);
+        console.log(newDecoded);
         
         return { user, newAccessToken, newRefreshToken };
     }

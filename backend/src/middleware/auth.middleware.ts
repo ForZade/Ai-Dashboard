@@ -10,37 +10,33 @@ export async function authMiddleware(req: FastifyRequest, res: FastifyReply) {
     let user: User | null = null;
     let rotatedAccessToken: string | null = null;
     let rotatedRefreshToken: string | null = null;
-    
+
     if (!accessToken) {
-      const refreshToken = req.cookies.refreshToken;
+        const refreshToken = req.cookies.refreshToken;
 
-      if (!refreshToken) {
-        throw new Error("No Refresh Token Found");
-      }
-      
-      const userAgent = req.headers["user-agent"];
-
-      if (!userAgent) {
-        throw new Error("Missing user agent");
-      }
-      
-      const result = await tokenService.validateRefreshToken(refreshToken, userAgent);
-      user = result.user;
-      rotatedAccessToken = result.newAccessToken;
-      rotatedRefreshToken = result.newRefreshToken;
+        if (!refreshToken) {
+            throw new Error("No Refresh Token Found");
+        }
+        
+        const result = await tokenService.validateRefreshToken(refreshToken);
+        user = result.user;
+        rotatedAccessToken = result.newAccessToken;
+        rotatedRefreshToken = result.newRefreshToken;
     } else {
       user = await tokenService.validateAccessToken(accessToken);
     }
     
     if (rotatedAccessToken && rotatedRefreshToken) {
-      res.header("x-access-token", rotatedAccessToken);
-      res.setCookie("refreshToken", rotatedRefreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        path: "/",
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      });
+        console.log("We hit token settings");
+
+        res.header("x-access-token", rotatedAccessToken);
+        res.cookie("refreshToken", rotatedRefreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            path: "/",
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        });
     }
     
     req.user = {
