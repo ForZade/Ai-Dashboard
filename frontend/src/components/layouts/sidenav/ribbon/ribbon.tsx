@@ -27,7 +27,7 @@ export default function Ribbon() {
     }, []);
 
     return (
-        <nav className="w-16 h-full px-4 py-2 flex flex-col items-center gap-2">
+        <nav className="w-16 h-full p-4 flex flex-col items-center gap-2">
             {projects.map((project: any) => (
                 <ProjectInteractive key={project.id} project={project} />
             ))}

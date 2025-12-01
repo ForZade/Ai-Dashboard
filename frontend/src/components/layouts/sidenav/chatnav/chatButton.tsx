@@ -1,7 +1,6 @@
-import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { IconProps } from "@solar-icons/react";
 import { MenuDots } from "@solar-icons/react/ssr";
-import React, { ComponentType, ReactNode } from "react";
+import { ComponentType, ReactNode } from "react";
 
 interface ChatButtonProps {
     icon?: ComponentType<IconProps>;
@@ -12,7 +11,7 @@ interface ChatButtonProps {
 
 export default function ChatButton({ icon: Icon, children, className, menu = true }: ChatButtonProps) {
     return (
-        <button className={`flex items-center p-1 gap-2 justify-between grow bg-linear-to-r hover:from-foreground/5 rounded-lg transition-colors group text-sm ${className}`}>
+        <button className={`flex w-full items-center p-1 gap-2 justify-between grow bg-linear-to-r hover:from-foreground/5 rounded-lg transition-colors group text-sm ${className}`}>
             <div className="flex items-center gap-2 overflow-hidden">
                 { Icon && 
                     <div className="p-1.5">
@@ -27,9 +26,9 @@ export default function ChatButton({ icon: Icon, children, className, menu = tru
 
             {
                 menu && 
-                <button className="p-1 group-hover:text-foreground text-transparent hover:bg-foreground/5 rounded-lg">
+                <div className="p-1 group-hover:text-foreground text-transparent hover:bg-foreground/5 rounded-lg">
                     <MenuDots weight="Bold" size={20}/>
-                </button>
+                </div>
             }
         </button>
     )
