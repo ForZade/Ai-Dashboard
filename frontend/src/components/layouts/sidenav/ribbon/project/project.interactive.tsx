@@ -6,14 +6,14 @@ import Project from "./project";
 import { useProjects } from "@/contexts/useProjects";
 
 export default function ProjectInteractive({ project, size }: { project: any, size?: "defalut" | "sm" | "lg" }) {
-    const { deleteProject } = useProjects();
+    const { deleteProject, selectProject } = useProjects();
 
     return (
         <Tooltip>
             <ContextMenu>
                 <ContextMenuTrigger>
                     <TooltipTrigger className="rounded-full">
-                        <Project project={project} size={size}/>
+                        <Project project={project} size={size} onClick={() => selectProject(project.id)}/>
                     </TooltipTrigger>
                 </ContextMenuTrigger>
 

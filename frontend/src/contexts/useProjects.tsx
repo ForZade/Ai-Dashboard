@@ -8,10 +8,13 @@ import { createContext, useContext, useState, ReactNode, useEffect } from "react
 import { UseFormSetError } from "react-hook-form";
 
 interface ProjectsContextType {
-  projects: any,
+  projects: Project[],
+  selected: string,
+  categories: any;
   loadProjects: (projects: any) => void;
   createProject: (projects: CreateProjectValues, setError: UseFormSetError<CreateProjectValues>) => void;
   deleteProject: (projectId: string) => void;
+  selectProject: (projectId: string) => void;
 }
 
 interface Project {
@@ -31,36 +34,53 @@ export const useProjects = () => {
 };
 
 export const ProjectsProvider = ({ children }: { children: ReactNode }) => {
-  const [projects, setProjects] = useState<Project[]>([]);
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [selected, setSelected] = useState<string>("");
+    const [categories, setCategories] = useState(null);
 
-  useEffect(() => {
-    console.log(projects);
-  }, [projects]);
+    useEffect(() => {
+        console.log(selected, categories);
+    }, [selected, categories])
 
-  const loadProjects = (projects: any) => {
-    setProjects(projects);
-  }
+    const loadProjects = (projects: any) => {
+        setProjects(projects);
 
-  const createProject = async (data: CreateProjectValues, setError: UseFormSetError<CreateProjectValues>) => {
-    const [res, projectError] = await safe(api.post('/api/v1/projects', data));
-    if (projectError) return handleError(projectError, setError);
+        setSelected(projects[0].id);
+        return;
+    }
 
-    const project = res.data.data;
+    const createProject = async (data: CreateProjectValues, setError: UseFormSetError<CreateProjectValues>) => {
+        const [res, projectError] = await safe(api.post('/api/v1/projects', data));
+        if (projectError) return handleError(projectError, setError);
 
-    setProjects(prev => [...prev, project]);
-    return;
-  }
+        const project = res.data.data;
 
-  const deleteProject = async (projectId: string) => {
-    const [, projectError] = await safe(api.delete(`/api/v1/projects/${projectId}`));
-    if (projectError) return handleError(projectError);
+        setProjects(prev => [...prev, project]);
+        return;
+    }
 
-    setProjects(prev => prev.filter(p => p.id !== projectId));
-    return;
-  }
+    const deleteProject = async (projectId: string) => {
+        const [, projectError] = await safe(api.delete(`/api/v1/projects/${projectId}`));
+        if (projectError) return handleError(projectError);
+
+        setProjects(prev => prev.filter(p => p.id !== projectId));
+        return;
+    }
+
+    const selectProject = async (projectId: string) => {
+        setSelected(projectId);
+
+        const [res, categoryError] = await safe(api.get(`/api/v1/projects/${projectId}`));
+        if (categoryError) return handleError(categoryError);
+
+        const result = res.data.data;
+
+        setCategories(result);
+        return;
+    }
 
   return (
-    <ProjectsContext.Provider value={{ projects, loadProjects, createProject, deleteProject }}>
+    <ProjectsContext.Provider value={{ projects, selected, categories, loadProjects, createProject, deleteProject, selectProject }}>
       {children}
     </ProjectsContext.Provider>
   );
