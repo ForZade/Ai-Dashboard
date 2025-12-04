@@ -81,7 +81,6 @@ model Project {
   created_at    DateTime @default(now())
 
   user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  categories    Category[]
 }
 
 model Chat {
@@ -90,21 +89,10 @@ model Chat {
   name        String
   category_id BigInt?
   owner_id    BigInt
+  pinned      Boolean  @default(false)
   created_at  DateTime @default(now())
 
   owner       User     @relation(fields: [owner_id], references: [id], onDelete: Cascade)
-  category  Category?  @relation(fields: [category_id], references: [id], onDelete: SetNull) 
-}
-
-model Category {
-    id         BigInt @id
-    project_id BigInt
-    name       String
-    position   Int
-    created_at DateTime @default(now())
-
-    chats    Chat[]
-    project  Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
 }
 
 model AIProfile {

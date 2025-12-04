@@ -6,7 +6,6 @@ import { User } from '../../db/postgres/prisma';
 import { CreateProjectType, UpdateProjectType } from './projects.validator';
 import { serializeToJson } from '../../lib/utils/serialize.utils';
 import { chatService } from '../../services/chat.service';
-import { success } from 'zod';
 import { messageService } from '../../services/message.service';
 
 const projectsService = new ProjectsService();
@@ -88,12 +87,12 @@ export class ProjectsController {
         const { id } = req.params;
         const projectId = BigInt(id);
 
-        const [categories, categoriesError] = await safe(chatService.getAllChats(projectId));
-        if (categoriesError) return handleError(res, categoriesError);
+        const [chats, chatsError] = await safe(chatService.getAllChats(projectId));
+        if (chatsError) return handleError(res, chatsError);
 
         return res.status(200).send({
             success: true,
-            data: await serializeToJson(categories),
+            data: await serializeToJson(chats),
         });
     }
 

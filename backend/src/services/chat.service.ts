@@ -5,38 +5,27 @@ export class ChatService {
     async getAllChats(projectId: bigint) {
         const prisma = prismaService.getClient();
 
-        const categories = await prisma.category.findMany({
-            where: {
-                project_id: projectId,
-            },
-            orderBy: { position: "asc" },
-            include: {
-                chats: {
-                    orderBy: { created_at: "asc" }
-                }
-            }
-        });
-
-        const uncategorizedChats = await prisma.chat.findMany({
-            where: {
-                project_id: projectId,
-                category_id: null,
-            },
+        const chats = await prisma.chat.findMany({
+            where: { project_id: projectId },
             orderBy: { created_at: "asc" },
         });
 
-        return [
-            categories.map(category => ({
-                id: category.id,
-                name: category.name,
-                chats: category.chats
-            })),
-            {
-                id: null,
-                name: "Chats",
-                chats: uncategorizedChats,
-            }
-        ];
+        const sortedChats = chats.reduce<{ 
+            pinned: typeof chats,
+            chats: typeof chats,
+        }>(
+            (acc, chat) => {
+                if (chat.pinned) {
+                acc.pinned.push(chat);
+                } else {
+                acc.chats.push(chat);
+                }
+                return acc;
+            },
+            { pinned: [], chats: [] }
+        );
+
+        return sortedChats;
     }
 
     async createNewChat(message: string, userId: bigint, projectId: bigint) {
