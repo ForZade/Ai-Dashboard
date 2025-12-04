@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { authMiddleware, validateBody } from "../../middleware";
 import { projectsController } from "./projects.controller";
 import { createProjectSchema, CreateProjectType, updateProjectSchema, UpdateProjectType } from "./projects.validator";
-import { messageSchema, MessageType } from "../chats/chats.validator";
+import { messageSchema, MessageType } from "../chats/chat.validator";
 
 export default function projectsRoutes(fastify: FastifyInstance) {
     fastify.get(

@@ -56,6 +56,35 @@ export class ChatService {
 
         return chat;
     }
+
+    async updateChatName(name: string, userId: bigint, chatId: bigint) {
+        const prisma = prismaService.getClient();
+
+        const chat = await prisma.chat.update({
+            where: {
+                id: chatId,
+                owner_id: userId,
+            },
+            data: {
+                name,
+            }
+        });
+
+        return chat;
+    }
+
+    async deleteChat(userId: bigint, chatId: bigint) {
+        const prisma = prismaService.getClient();
+
+        const chat = await prisma.chat.delete({
+            where: {
+                id: chatId,
+                owner_id: userId,
+            }
+        });
+
+        return chat;
+    }
 }
 
 export const chatService = new ChatService();
