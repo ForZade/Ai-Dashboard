@@ -1,4 +1,5 @@
 import { prismaService } from "../db";
+import { NotFoundError } from "../lib/exceptions";
 import { generateId } from "../lib/utils/snowflake.utils";
 
 export class ChatService {
@@ -73,6 +74,28 @@ export class ChatService {
         });
 
         return chat;
+    }
+
+    async pinChat(userId: bigint, chatId: bigint) {
+        const prisma = prismaService.getClient();
+
+        const chat = await prisma.chat.findUnique({
+            where: { id: chatId },
+        });
+
+        if (!chat) throw new NotFoundError("Chat not found");
+
+        const updatedChat = await prisma.chat.update({
+            where: {
+                id: chatId,
+                owner_id: userId,
+            },
+            data: {
+                pinned: !chat.pinned
+            }
+        });
+
+        return updatedChat;
     }
 }
 

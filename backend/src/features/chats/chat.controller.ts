@@ -5,7 +5,7 @@ import { chatService } from "../../services/chat.service";
 import { handleError } from "../../lib/exceptions";
 import { success } from "zod";
 
-export class ChatsController {
+export class ChatController {
     async updateChatName(req: FastifyRequest<{ Body: { name: string }, Params: { id: string }}>, res: FastifyReply) {
         const user = req.user as User;
         const { id } = req.params;
@@ -39,6 +39,21 @@ export class ChatsController {
             data: chat,
         });
     }
+
+    async pinChat(req: FastifyRequest<{ Params: { id: string }}>, res: FastifyReply) {
+        const user = req.user as User;
+        const { id } = req.params;
+        const chatId = BigInt(id);
+
+        const [chat, chatError] = await safe(chatService.pinChat(user.id, chatId));
+        if (chatError) return handleError(res, chatError);
+
+        return res.status(200).send({
+            success: true,
+            message: "Chat pin status was successfully changed",
+            data: chat,
+        });
+    }
 }
 
-export const chatsController = new ChatsController();
+export const chatController = new ChatController();
