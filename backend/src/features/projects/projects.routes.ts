@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { authMiddleware, validateBody } from "../../middleware";
 import { projectsController } from "./projects.controller";
 import { createProjectSchema, CreateProjectType, updateProjectSchema, UpdateProjectType } from "./projects.validator";
+import { messageSchema, MessageType } from "../chats/chats.validator";
 
 export default function projectsRoutes(fastify: FastifyInstance) {
     fastify.get(
@@ -34,9 +35,9 @@ export default function projectsRoutes(fastify: FastifyInstance) {
         projectsController.getProjectChats,
     )
 
-    fastify.post<{ Body: { message: string }, Params: { id: string }}>(
+    fastify.post<{ Body: MessageType, Params: { id: string }}>(
         "/:id/chats",
-        { preValidation: authMiddleware }, //! Add Validation later
+        { preValidation: [authMiddleware, validateBody(messageSchema)] },
         projectsController.createNewProjectChat,
     );
 }
