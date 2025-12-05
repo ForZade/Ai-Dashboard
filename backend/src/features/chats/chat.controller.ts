@@ -5,8 +5,6 @@ import { chatService } from "../../services/chat.service";
 import { handleError } from "../../lib/exceptions";
 import { serializeToJson } from "../../lib/utils/serialize.utils";
 import { messageService } from "../../services/message.service";
-import { scyllaService } from "../../db";
-import { success } from "zod";
 
 export class ChatController {
     async updateChatName(req: FastifyRequest<{ Body: { name: string }, Params: { id: string }}>, res: FastifyReply) {

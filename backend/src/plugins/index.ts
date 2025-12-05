@@ -7,6 +7,7 @@ import { registerErrorHandling } from "./errors.plugin";
 import { registerRoutes } from "./routes.plugin";
 import { connectDB } from "../db";
 import { registerPassport } from "./passport.plugin";
+import { registerHooks } from "./hooks";
 
 export function createServer() {
   const app = Fastify();
@@ -19,6 +20,7 @@ export function createServer() {
   registerMultipart(app);
   registerErrorHandling(app);
   registerPassport(app);
+  registerHooks(app);
   app.register(registerRoutes, { prefix: "/api/v1" });
 
   return app;

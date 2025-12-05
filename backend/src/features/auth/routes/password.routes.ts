@@ -24,7 +24,7 @@ export default function passwordAuthRoutes(fastify: FastifyInstance) {
 
     fastify.post<{ Body: ChangePasswordType }>(
         "/password",
-        { preValidation: [authMiddleware, validateBody(ChangePasswordSchema)]},
+        { preValidation: validateBody(ChangePasswordSchema) },
         passwordController.changePassword,
     );
 }

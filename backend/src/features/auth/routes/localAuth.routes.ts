@@ -18,7 +18,6 @@ export default function localAuthRoutes(fastify: FastifyInstance) {
 
     fastify.post(
         "/logout",
-        { preValidation: authMiddleware },
         localAuthController.logoutUser,
     );
 }

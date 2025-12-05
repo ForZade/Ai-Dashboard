@@ -7,37 +7,34 @@ import { messageSchema, MessageType } from "../chats/chat.validator";
 export default function projectsRoutes(fastify: FastifyInstance) {
     fastify.get(
         "/",
-        { preValidation: authMiddleware },
         projectsController.getAllProjects,
     );
 
     fastify.post<{ Body: CreateProjectType }>(
         "/",
-        { preValidation: [authMiddleware, validateBody(createProjectSchema)] },
+        { preValidation: validateBody(createProjectSchema) },
         projectsController.createNewProject,
     );
 
     fastify.patch<{ Body: UpdateProjectType, Params: { id: string } }>(
         "/:id",
-        { preValidation: [authMiddleware, validateBody(updateProjectSchema)]},
+        { preValidation: validateBody(updateProjectSchema) },
         projectsController.updateProject,
     );
 
     fastify.delete<{ Params: { id: string }}>(
         "/:id",
-        { preValidation: authMiddleware },
         projectsController.deleteProject
     );
 
     fastify.get<{ Params: { id: string } }>(
         "/:id/chats",
-        { preValidation: authMiddleware },
         projectsController.getProjectChats,
     )
 
     fastify.post<{ Body: MessageType, Params: { id: string }}>(
         "/:id/chats",
-        { preValidation: [authMiddleware, validateBody(messageSchema)] },
+        { preValidation: validateBody(messageSchema) },
         projectsController.createNewProjectChat,
     );
 }
