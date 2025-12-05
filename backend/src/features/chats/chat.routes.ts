@@ -1,12 +1,11 @@
 import { FastifyInstance } from "fastify";
-import { authMiddleware, validateBody } from "../../middleware";
-import { updateNameSchema, UpdateNameType } from "../chats/chat.validator";
+import { messageSchema, updateNameSchema, UpdateNameType } from "../chats/chat.validator";
 import { chatController } from "./chat.controller";
 
 export default function chatsRoutes(fastify: FastifyInstance) {
     fastify.patch<{ Body: UpdateNameType, Params: { id: string }}>(
         "/:id",
-        { preValidation: validateBody(updateNameSchema) },
+        { config: { schema: updateNameSchema }},
         chatController.updateChatName,
     );
 
@@ -22,6 +21,7 @@ export default function chatsRoutes(fastify: FastifyInstance) {
 
     fastify.post<{ Body: { message: string }, Params: {id: string }}>(
         "/:id/messages",
+        { config: { schema: messageSchema }},
         chatController.sendChannelMessage,
     );
 

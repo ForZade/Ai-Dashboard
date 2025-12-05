@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import { authMiddleware, validateBody } from "../../middleware";
 import { projectsController } from "./projects.controller";
 import { createProjectSchema, CreateProjectType, updateProjectSchema, UpdateProjectType } from "./projects.validator";
 import { messageSchema, MessageType } from "../chats/chat.validator";
@@ -12,13 +11,13 @@ export default function projectsRoutes(fastify: FastifyInstance) {
 
     fastify.post<{ Body: CreateProjectType }>(
         "/",
-        { preValidation: validateBody(createProjectSchema) },
+        { config: { schema: createProjectSchema }},
         projectsController.createNewProject,
     );
 
     fastify.patch<{ Body: UpdateProjectType, Params: { id: string } }>(
         "/:id",
-        { preValidation: validateBody(updateProjectSchema) },
+        { config: { schema: updateProjectSchema }},
         projectsController.updateProject,
     );
 
@@ -34,7 +33,7 @@ export default function projectsRoutes(fastify: FastifyInstance) {
 
     fastify.post<{ Body: MessageType, Params: { id: string }}>(
         "/:id/chats",
-        { preValidation: validateBody(messageSchema) },
+        { config: { schema: messageSchema }},
         projectsController.createNewProjectChat,
     );
 }
